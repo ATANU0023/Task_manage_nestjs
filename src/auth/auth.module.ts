@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtStrategy } from './strategy/jwt.strategy';
@@ -19,9 +19,11 @@ import { PrismaModule } from 'src/prisma/prisma.module';
         signOptions: { expiresIn: '60m' },
       }),
     }),
-    ConfigModule, PrismaModule
+    ConfigModule, 
+    PrismaModule,
   ],  
-  providers: [AuthService,JwtStrategy, JwtAuthGuard,PrismaModule],
-  controllers: [AuthController]
+  providers: [AuthService ,JwtStrategy, JwtAuthGuard,PrismaModule], 
+  controllers: [AuthController],
+  exports:[AuthService,JwtAuthGuard],
 })
 export class AuthModule {}

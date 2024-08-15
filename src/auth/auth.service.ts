@@ -7,6 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+    
+    private tokenBlacklist = new Set<string>();
     constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
 
@@ -45,7 +47,9 @@ export class AuthService {
             throw new Error('Invalid credentials');
         };
         return this.createToken(user.id, user.email);
-    }
+    };
+
+    
 
     createToken(userId: string, email: string){
         const payload = {
@@ -55,6 +59,17 @@ export class AuthService {
         return{
             access_token: this.jwtService.sign(payload),
         };
+    }
+
+    //logout
+    async logout(token: string):Promise<void> {
+        //console.log(`Blacklisting token: ${token}`);
+        this.tokenBlacklist.add(token);
+    }
+    
+    isTokenBlacklisted(token: string):boolean {
+        //console.log('Checking if token is blacklisted:', token);
+        return this.tokenBlacklist.has(token);
     }
 
 }
